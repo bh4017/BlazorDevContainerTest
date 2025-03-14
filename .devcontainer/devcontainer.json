@@ -2,11 +2,18 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
 {
 	"name": "Blazor/.NET API/MySQL",
-
-	"build": {
-        // Path is relative to the devcontainer.json file.
-        "dockerfile": "Dockerfile"
-    }
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "devcontainer",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
+    //"postCreateCommand": "dotnet restore",
+ //   "customizations": {
+ //       "vscode": {
+ //         "extensions": [
+ //               "ms-dotnettools.csharp",
+ //               "ms-mysql.mysql"
+ //           ]
+ //       }
+ //   }
 
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 
