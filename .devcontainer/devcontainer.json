@@ -5,15 +5,6 @@
     "dockerComposeFile": "docker-compose.yml",
     "service": "devcontainer",
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
-    //"postCreateCommand": "dotnet restore",
- //   "customizations": {
- //       "vscode": {
- //         "extensions": [
- //               "ms-dotnettools.csharp",
- //               "ms-mysql.mysql"
- //           ]
- //       }
- //   }
 
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 
