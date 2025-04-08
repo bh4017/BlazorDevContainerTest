@@ -13,12 +13,20 @@
 				"ms-dotnettools.csdevkit"
 			]
 		}
-	}
+	},
 
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+	"features": {
+	// DOCKER
+	"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+	// AWS CLI
+    "ghcr.io/devcontainers/features/aws-cli:1.1.0": {},
+	// Amazon CDK
+	"ghcr.io/devcontainers-extra/features/aws-cdk:2": {}
+	}
+	
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [5000, 5001],

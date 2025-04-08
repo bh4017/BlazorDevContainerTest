@@ -1,0 +1,12 @@
+cdk.out/
+deploy/src/Deploy/cdk.out/
+deploy/src/Deploy/bin/
+deploy/src/Deploy/obj/
+src/WebApp/bin/
+src/WebApp/obj/
+.git/
+.vscode/
+*.md
+*.sln
+*.user
+*.suo
