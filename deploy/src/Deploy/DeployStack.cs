@@ -1,8 +1,10 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.Ecr.Assets;
 using Amazon.CDK.AWS.AppRunner.Alpha;
+using Amazon.CDK.AWS.Cognito;
 using Constructs;
 using System.IO;
+using System;
 
 namespace Deploy
 {
@@ -12,17 +14,19 @@ namespace Deploy
             : base(scope, id, props)
         {
             // Build and upload Docker image from Dockerfile.blazor
-            
-            var projectRoot = "/workspaces/BlazorDevContainerTest";
+            var _dirname = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            //Console.WriteLine($"dirname: {_dirname}");
+            var projectRoot = Path.GetFullPath(Path.Combine(_dirname, "..", "..", "..", "..", "..", ".."));
+            //Console.WriteLine($"projectRoot: {projectRoot}");
 
             var dockerImage = new DockerImageAsset(this, "BlazorImage", new DockerImageAssetProps
             {
-                Directory = projectRoot,
-                File = ".devcontainer/Dockerfile.blazor"
+                Directory = projectRoot,                      
+                File = "deploy/Dockerfile.blazor"             
             });
 
 
-            // App Runner service using that image
+            // App Runner service
             var service = new Service(this, "BlazorAppRunner", new ServiceProps
             {
                 Source = Source.FromAsset(new AssetProps
@@ -41,6 +45,61 @@ namespace Deploy
                 Value = service.ServiceUrl,
                 Description = "Blazor App Public URL"
             });
+
+            // AWS Cognito
+            var userPool = new UserPool(this, "WisdomUserPool", new UserPoolProps
+            {
+                UserPoolName = "WisdomUserPool",
+                PasswordPolicy = new PasswordPolicy
+                {
+                    MinLength = 6,
+                    RequireDigits = false,
+                    RequireLowercase = false,
+                    RequireUppercase = false,
+                    RequireSymbols = false
+                },
+                Mfa = Mfa.OFF,
+                SignInAliases = new SignInAliases
+                {
+                    Email = true
+                },
+                AutoVerify = new AutoVerifiedAttrs
+                {
+                    Email = true
+                },
+                StandardAttributes = new StandardAttributes
+                {
+                    Email = new StandardAttribute
+                    {
+                        Required = true
+                    }
+                },
+                AccountRecovery = AccountRecovery.EMAIL_ONLY,
+                SelfSignUpEnabled = true,
+                RemovalPolicy = RemovalPolicy.DESTROY
+            });
+
+            var userPoolClient = userPool.AddClient("main-client", new UserPoolClientOptions
+            {
+                AuthFlows = new AuthFlow
+                {
+                    UserPassword = true,
+                    UserSrp = true
+                }
+            });
+
+            new CfnOutput(this, "UserPoolId", new CfnOutputProps
+            {
+                Value = userPool.UserPoolId,
+                Description = "The ID of the user pool"
+            });
+
+            new CfnOutput(this, "UserPoolClientId", new CfnOutputProps
+            {
+                Value = userPoolClient.UserPoolClientId,
+                Description = "The ID of the user pool client"
+            });
+        
         }
     }
 }

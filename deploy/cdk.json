@@ -1,5 +1,6 @@
 {
   "app": "dotnet run --project src/Deploy/Deploy.csproj",
+  "output": "../cdk.out",
   "watch": {
     "include": [
       "**"
