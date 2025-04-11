@@ -10,9 +10,6 @@ namespace Deploy
         public static void Main(string[] args)
         {
             var app = new App();
-
-
-
             new DeployStack(app, "DeployStack", new StackProps
             {
                 // If you don't specify 'env', this stack will be environment-agnostic.
