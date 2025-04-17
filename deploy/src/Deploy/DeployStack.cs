@@ -39,13 +39,7 @@ namespace Deploy
                 }),
                 AutoDeploymentsEnabled = true
             });
-
-            new CfnOutput(this, "AppRunnerURL", new CfnOutputProps
-            {
-                Value = service.ServiceUrl,
-                Description = "Blazor App Public URL"
-            });
-
+            
             // AWS Cognito
             var userPool = new UserPool(this, "WisdomUserPool", new UserPoolProps
             {
@@ -79,13 +73,45 @@ namespace Deploy
                 RemovalPolicy = RemovalPolicy.DESTROY
             });
 
-            var userPoolClient = userPool.AddClient("main-client", new UserPoolClientOptions
+            var userPoolDomain = userPool.AddDomain("UserPoolDomain", new UserPoolDomainOptions
+            {
+                CognitoDomain = new CognitoDomainOptions
+                {
+                    DomainPrefix = "wisdomapp-bh4017"
+                }
+            });
+
+            var userPoolClient = userPool.AddClient("blazor-client", new UserPoolClientOptions
             {
                 AuthFlows = new AuthFlow
                 {
                     UserPassword = true,
                     UserSrp = true
-                }
+                },
+                OAuth = new OAuthSettings
+                {
+                    CallbackUrls = new[] {
+                        "https://ups5aw2pij.eu-west-2.awsapprunner.com/signin-oidc",
+                        "http://localhost:5098/signin-oidc"
+                    },
+                    LogoutUrls = new[] {
+                        "https://ups5aw2pij.eu-west-2.awsapprunner.com/signout-callback-oidc",
+                        "http://localhost:5098/signout-callback-oidc"
+                    },
+
+                    Flows = new OAuthFlows
+                    {
+                        AuthorizationCodeGrant = true
+                    },
+                    Scopes = new[]
+                    {
+                        OAuthScope.OPENID,
+                        OAuthScope.EMAIL,
+                        OAuthScope.PROFILE
+                    }
+
+                },
+                SupportedIdentityProviders = new[] { UserPoolClientIdentityProvider.COGNITO }
             });
 
             new CfnOutput(this, "UserPoolId", new CfnOutputProps
@@ -99,7 +125,19 @@ namespace Deploy
                 Value = userPoolClient.UserPoolClientId,
                 Description = "The ID of the user pool client"
             });
-        
+
+            new CfnOutput(this, "UserPoolDomain", new CfnOutputProps
+            {
+                Value = userPoolDomain.DomainName,
+                Description = "Cognito Hosted UI Domain"
+            });
+
+            new CfnOutput(this, "AppRunnerURL", new CfnOutputProps
+            {
+                Value = service.ServiceUrl,
+                Description = "Blazor App Public URL"
+            });
+
         }
     }
 }
