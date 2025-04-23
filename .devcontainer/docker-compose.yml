@@ -1,0 +1,34 @@
+services:
+  devcontainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../..:/workspaces:cached
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sleep infinity
+      
+
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: "db"
+      MYSQL_USER: "dbadmin"
+      MYSQL_PASSWORD: "pwd"
+      MYSQL_ROOT_PASSWORD: "pwd"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
+
+volumes:
+  mysql-data:

@@ -1,0 +1,25 @@
+@page "/wisdom"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+
+
+
+<PageTitle>Wisdom</PageTitle>
+
+<h1>Wisdom</h1>
+
+@if (perls == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="quote-container @fadeState">
+        <div class="quote-text">@currentPerl?.Perl</div>
+        <div class="quote-author">- @currentPerl?.Author</div>
+    </div>
+}
+
